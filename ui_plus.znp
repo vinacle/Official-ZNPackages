@@ -1,0 +1,16 @@
+{INTERFACE}
+name = ui_plus
+command (
+- canvas ["ширина,высота"] = B.CREATE_CANVAS
+- line ["x1,y1,x2,y2,цвет"] = B.DRAW_LINE
+- rect ["x1,y1,x2,y2,цвет"] = B.DRAW_RECT
+- oval ["x1,y1,x2,y2,цвет"] = B.DRAW_OVAL
+- clear [""] = B.CLEAR
+)
+
+{LOGIC}
+B.CREATE_CANVAS => import tkinter as tk; args = ctx["arg"].split(","); w = int(args[0]) if len(args)>0 and args[0] else 400; h = int(args[1]) if len(args)>1 and args[1] else 400; win = tk.Toplevel(); win.title("ZNC Render"); ctx["cv"] = tk.Canvas(win, width=w, height=h, bg="white"); ctx["cv"].pack(); self.log(f"Холст создан: {w}x{h}")
+B.DRAW_LINE => a = ctx["arg"].split(","); ctx["cv"].create_line(int(a[0]), int(a[1]), int(a[2]), int(a[3]), fill=a[4] if len(a)>4 else "black") if "cv" in ctx else self.log("Ошибка: Сначала создай canvas!", "#ff0000")
+B.DRAW_RECT => a = ctx["arg"].split(","); ctx["cv"].create_rectangle(int(a[0]), int(a[1]), int(a[2]), int(a[3]), fill=a[4] if len(a)>4 else "blue", outline="black") if "cv" in ctx else self.log("Ошибка: Сначала создай canvas!", "#ff0000")
+B.DRAW_OVAL => a = ctx["arg"].split(","); ctx["cv"].create_oval(int(a[0]), int(a[1]), int(a[2]), int(a[3]), fill=a[4] if len(a)>4 else "red", outline="black") if "cv" in ctx else self.log("Ошибка: Сначала создай canvas!", "#ff0000")
+B.CLEAR => ctx["cv"].delete("all") if "cv" in ctx else None
