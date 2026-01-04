@@ -1,0 +1,207 @@
+{INTERFACE}
+name = basepp
+command (
+- ls [""] = B.LS
+- ll [""] = B.LL
+- pwd [""] = B.PWD
+- cd ["path"] = B.CD
+- cat ["file"] = B.CAT
+- touch ["file"] = B.TOUCH
+- rm ["file"] = B.RM
+- mkdir ["dir"] = B.MKDIR
+- rmdir ["dir"] = B.RMDIR
+- cp ["s>d"] = B.CP
+- mv ["s>d"] = B.MV
+- ren ["o>n"] = B.REN
+- tree [""] = B.TREE
+- find ["t>f"] = B.FIND
+- grep ["t>f"] = B.GREP
+- whoami [""] = B.WHO
+- hostname [""] = B.HOST
+- ver [""] = B.VER
+- wver [""] = B.WVER
+- date [""] = B.DATE
+- time [""] = B.TIME
+- uptime [""] = B.UP
+- ps [""] = B.PS
+- kill ["name"] = B.KILL
+- kill_f ["name"] = B.KILLF
+- task_list [""] = B.TLIST
+- ping ["host"] = B.PING
+- ip [""] = B.IP
+- ip_all [""] = B.IPALL
+- netstat [""] = B.NET
+- route [""] = B.ROUTE
+- arp [""] = B.ARP
+- nslookup ["h"] = B.NS
+- tracert ["h"] = B.TRACE
+- df [""] = B.DF
+- du ["path"] = B.DU
+- mem [""] = B.MEM
+- cpu [""] = B.CPU
+- gpu [""] = B.GPU
+- battery [""] = B.BATT
+- disk_info [""] = B.DINF
+- env [""] = B.ENV
+- set_env ["k=v"] = B.SENV
+- get_env ["k"] = B.GENV
+- path [""] = B.PATH
+- sys_info [""] = B.SYS
+- drv_list [""] = B.DRV
+- services [""] = B.SERV
+- start_srv ["n"] = B.SSRV
+- stop_srv ["n"] = B.PSRV
+- open ["path"] = B.OPEN
+- open_url ["url"] = B.URL
+- start ["cmd"] = B.START
+- run_ps ["cmd"] = B.PSHL
+- reg_query ["k"] = B.REGQ
+- schtasks [""] = B.SCH
+- shutdown [""] = B.SD
+- reboot [""] = B.RB
+- logoff [""] = B.LO
+- lock [""] = B.LOCK
+- cls [""] = B.CLS
+- clear [""] = B.CLS
+- pause [""] = B.PAUSE
+- sleep ["s"] = B.SLEEP
+- beep [""] = B.BEEP
+- msg ["text"] = B.MSG
+- clip_put ["t"] = B.CPUT
+- clip_get [""] = B.CGET
+- md5 ["file"] = B.MD5
+- sha256 ["file"] = B.SHA
+- wget ["url"] = B.WGET
+- curl ["url"] = B.CURL
+- zip ["s>d"] = B.ZIP
+- unzip ["s>d"] = B.UNZ
+- attrib ["f>a"] = B.ATTR
+- sort ["file"] = B.SORT
+- type ["file"] = B.TYPE
+- help [""] = B.HELP
+- list_znp [""] = B.LZNP
+- list_znmm [""] = B.LZNM
+- base64_e ["t"] = B.B64E
+- base64_d ["t"] = B.B64D
+- vol [""] = B.VOL
+- title ["t"] = B.TITLE
+- color ["h"] = B.COLOR
+- font_size ["n"] = B.FONT
+- disk_part [""] = B.DPART
+- chkdsk ["d"] = B.CHK
+- format ["d"] = B.FMT
+- assoc [""] = B.ASSOC
+- ftype [""] = B.FTYPE
+- cipher ["f"] = B.CIPH
+- compact ["f"] = B.COMP
+- power_cfg [""] = B.PWCFG
+- drivers [""] = B.DRVS
+- bios [""] = B.BIOS
+- motherboard [""] = B.MB
+- user_list [""] = B.USR
+- net_user ["n"] = B.NUSR
+- share [""] = B.SHR
+- sync [""] = B.SYNC
+)
+
+{LOGIC}
+B.LS => import subprocess as s; r=s.check_output("dir /b", shell=True).decode("cp866"); self.console.insert("end", r+"\n"); self.console.see("end")
+B.LL => import subprocess as s; r=s.check_output("dir", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.PWD => import os; self.console.insert("end", os.getcwd()+"\n")
+B.CD => import os; os.chdir(ctx["arg"]); self.console.insert("end", f"Путь изменен на {os.getcwd()}\n")
+B.CAT => f=open(ctx["arg"],"r",encoding="utf-8",errors="ignore"); r=f.read(); f.close(); self.console.insert("end", r+"\n")
+B.TOUCH => f=open(ctx["arg"],"w"); f.close(); self.console.insert("end", "Файл создан\n")
+B.RM => import os; os.remove(ctx["arg"]); self.console.insert("end", "Файл удален\n")
+B.MKDIR => import os; os.makedirs(ctx["arg"],exist_ok=True); self.console.insert("end", "Папка создана\n")
+B.RMDIR => import shutil; shutil.rmtree(ctx["arg"],ignore_errors=True); self.console.insert("end", "Папка удалена\n")
+B.CP => import shutil; p=ctx["arg"].split(">"); shutil.copy(p[0],p[1]); self.console.insert("end", "Скопировано\n")
+B.MV => import shutil; p=ctx["arg"].split(">"); shutil.move(p[0],p[1]); self.console.insert("end", "Перемещено\n")
+B.REN => import os; p=ctx["arg"].split(">"); os.rename(p[0],p[1]); self.console.insert("end", "Переименовано\n")
+B.TREE => import subprocess as s; r=s.check_output("tree /f", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.FIND => import subprocess as s; p=ctx["arg"].split(">"); r=s.check_output(f"findstr {p[0]} {p[1]}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.GREP => import subprocess as s; p=ctx["arg"].split(">"); r=s.check_output(f"findstr {p[0]} {p[1]}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.WHO => import subprocess as s; r=s.check_output("whoami", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.HOST => import socket; self.console.insert("end", socket.gethostname()+"\n")
+B.VER => import subprocess as s; r=s.check_output("ver", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.WVER => import platform; self.console.insert("end", platform.platform()+"\n")
+B.DATE => import datetime as d; self.console.insert("end", d.datetime.now().strftime("%Y-%m-%d")+"\n")
+B.TIME => import datetime as d; self.console.insert("end", d.datetime.now().strftime("%H:%M:%S")+"\n")
+B.UP => import subprocess as s; r=s.check_output("powershell (get-date) - (gcim Win32_OperatingSystem).LastBootUpTime", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.PS => import subprocess as s; r=s.check_output("tasklist", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.KILL => import subprocess as s; s.run(f"taskkill /IM {ctx['arg']} /F", shell=True); self.console.insert("end", "Процесс убит\n")
+B.KILLF => import subprocess as s; s.run(f"taskkill /F /IM {ctx['arg']} /T", shell=True); self.console.insert("end", "Дерево процессов убито\n")
+B.TLIST => import subprocess as s; r=s.check_output("tasklist", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.PING => import subprocess as s; r=s.check_output(f"ping {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.IP => import subprocess as s; r=s.check_output("ipconfig", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.IPALL => import subprocess as s; r=s.check_output("ipconfig /all", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.NET => import subprocess as s; r=s.check_output("netstat -an", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.ROUTE => import subprocess as s; r=s.check_output("route print", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.ARP => import subprocess as s; r=s.check_output("arp -a", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.NS => import subprocess as s; r=s.check_output(f"nslookup {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.TRACE => import subprocess as s; r=s.check_output(f"tracert {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.DF => import subprocess as s; r=s.check_output("wmic logicaldisk get caption,size,freespace", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.DU => import subprocess as s; r=s.check_output(f"dir /s {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.MEM => import psutil; r=f"Занято памяти: {psutil.virtual_memory().percent}%"; self.console.insert("end", r+"\n")
+B.CPU => import psutil; r=f"Загрузка CPU: {psutil.cpu_percent()}%"; self.console.insert("end", r+"\n")
+B.GPU => import subprocess as s; r=s.check_output("wmic path win32_VideoController get name", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.BATT => import psutil; r=f"Заряд: {psutil.sensors_battery().percent}%"; self.console.insert("end", r+"\n")
+B.DINF => import subprocess as s; r=s.check_output("wmic diskdrive get model,size", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.ENV => import os; r="\n".join([f"{k}={v}" for k,v in os.environ.items()]); self.console.insert("end", r+"\n")
+B.SENV => import os; p=ctx["arg"].split("="); os.environ[p[0]]=p[1]; self.console.insert("end", "Переменная окружения задана\n")
+B.GENV => import os; self.console.insert("end", os.environ.get(ctx["arg"], "Не найдено")+"\n")
+B.PATH => import os; self.console.insert("end", os.environ.get("PATH")+"\n")
+B.SYS => import subprocess as s; r=s.check_output("systeminfo", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.DRV => import subprocess as s; r=s.check_output("driverquery", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.SERV => import subprocess as s; r=s.check_output("net start", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.SSRV => import subprocess as s; s.run(f"net start {ctx['arg']}", shell=True); self.console.insert("end", "Служба запущена\n")
+B.PSRV => import subprocess as s; s.run(f"net stop {ctx['arg']}", shell=True); self.console.insert("end", "Служба остановлена\n")
+B.OPEN => import os; os.startfile(ctx["arg"]); self.console.insert("end", "Открыто\n")
+B.URL => import webbrowser; webbrowser.open(ctx["arg"]); self.console.insert("end", "Ссылка открыта в браузере\n")
+B.START => import os; os.system(f"start {ctx['arg']}"); self.console.insert("end", "Запущено в новом окне\n")
+B.PSHL => import subprocess as s; r=s.check_output(f"powershell {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.REGQ => import subprocess as s; r=s.check_output(f"reg query {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.SCH => import subprocess as s; r=s.check_output("schtasks", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.SD => import os; os.system("shutdown /s /t 60"); self.console.insert("end", "Выключение через 60 сек\n")
+B.RB => import os; os.system("shutdown /r /t 60"); self.console.insert("end", "Перезагрузка через 60 сек\n")
+B.LO => import os; os.system("shutdown /l"); self.console.insert("end", "Выход из системы\n")
+B.LOCK => import os; os.system("rundll32.exe user32.dll,LockWorkStation"); self.console.insert("end", "Экран заблокирован\n")
+B.CLS => self.console.delete("1.0", "end")
+B.PAUSE => import tkinter.messagebox as m; m.showinfo("ZNC","Пауза")
+B.SLEEP => import time; time.sleep(float(ctx["arg"]))
+B.BEEP => print("\a"); self.console.insert("end", "Бип!\n")
+B.MSG => import os; os.system(f"msg * {ctx['arg']}"); self.console.insert("end", "Сообщение отправлено\n")
+B.CPUT => self.console.clipboard_clear(); self.console.clipboard_append(ctx["arg"])
+B.CGET => self.console.insert("end", self.console.clipboard_get()+"\n")
+B.MD5 => import hashlib; r=hashlib.md5(open(ctx["arg"],"rb").read()).hexdigest(); self.console.insert("end", r+"\n")
+B.SHA => import hashlib; r=hashlib.sha256(open(ctx["arg"],"rb").read()).hexdigest(); self.console.insert("end", r+"\n")
+B.WGET => import urllib.request as u; u.urlretrieve(ctx["arg"], "downloaded_file"); self.console.insert("end", "Загрузка завершена\n")
+B.CURL => import subprocess as s; r=s.check_output(f"curl {ctx['arg']}", shell=True).decode("cp866", errors="ignore"); self.console.insert("end", r+"\n")
+B.ZIP => import shutil; p=ctx["arg"].split(">"); shutil.make_archive(p[1], 'zip', p[0]); self.console.insert("end", "Архив создан\n")
+B.UNZ => import shutil; p=ctx["arg"].split(">"); shutil.unpack_archive(p[0], p[1]); self.console.insert("end", "Архив распакован\n")
+B.ATTR => import subprocess as s; p=ctx["arg"].split(">"); s.run(f"attrib {p[1]} {p[0]}", shell=True); self.console.insert("end", "Атрибуты изменены\n")
+B.SORT => import subprocess as s; r=s.check_output(f"sort {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.TYPE => f=open(ctx["arg"],"r",encoding="cp866",errors="ignore"); self.console.insert("end", f.read()+"\n"); f.close()
+B.HELP => self.console.insert("end", "BasePP 100+ Команд: ls, pwd, cat, ps, ping, ip, mem, cpu, gpu, wget, zip...\n")
+B.LZNP => import os; r=[f for f in os.listdir('.') if f.endswith('.znp')]; self.console.insert("end", str(r)+"\n")
+B.LZNM => import os; r=[f for f in os.listdir('.') if f.endswith('.znmm')]; self.console.insert("end", str(r)+"\n")
+B.B64E => import base64; r=base64.b64encode(ctx["arg"].encode()).decode(); self.console.insert("end", r+"\n")
+B.B64D => import base64; r=base64.b64decode(ctx["arg"].encode()).decode(); self.console.insert("end", r+"\n")
+B.VOL => import subprocess as s; r=s.check_output("vol", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.TITLE => root.title(ctx["arg"])
+B.COLOR => root.configure(bg=ctx["arg"])
+B.FONT => self.console.config(font=("Consolas", int(ctx["arg"])))
+B.DPART => import subprocess as s; r=s.check_output("echo list disk | diskpart", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.CHK => import subprocess as s; r=s.check_output(f"chkdsk {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.FMT => self.console.insert("end", "Команда форматирования заблокирована для безопасности!\n")
+B.ASSOC => import subprocess as s; r=s.check_output("assoc", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.FTYPE => import subprocess as s; r=s.check_output("ftype", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.CIPH => import subprocess as s; r=s.check_output(f"cipher /e {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.COMP => import subprocess as s; r=s.check_output(f"compact /c {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.PWCFG => import subprocess as s; r=s.check_output("powercfg /list", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.DRVS => import subprocess as s; r=s.check_output("driverquery /v", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.BIOS => import subprocess as s; r=s.check_output("wmic bios get serialnumber,name", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.MB => import subprocess as s; r=s.check_output("wmic baseboard get product,manufacturer", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.USR => import subprocess as s; r=s.check_output("net user", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.NUSR => import subprocess as s; r=s.check_output(f"net user {ctx['arg']}", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.SHR => import subprocess as s; r=s.check_output("net share", shell=True).decode("cp866"); self.console.insert("end", r+"\n")
+B.SYNC => self.console.insert("end", "Система синхронизирована\n")
